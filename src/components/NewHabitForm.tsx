@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Check } from "phosphor-react";
 import * as Checkbox from "@radix-ui/react-checkbox";
+import { api } from "../lib/axios";
 
 const availableWeeksDays = [
    "Domingo",
@@ -16,10 +17,16 @@ export function NewHabitForm() {
    const [title, setTitle] = useState("");
    const [weekDays, setWeekdays] = useState<number[]>([]);
 
-   const createNewHabit = (event: FormEvent) => {
+   const createNewHabit = async (event: FormEvent) => {
       event.preventDefault();
 
-      console.log(title, weekDays);
+      await api.post("habits", {
+         title,
+         weekDays
+      })
+
+      setTitle("");
+      setWeekdays([]);
    }
 
    const handleToogleWeekDay = (weekDay: number) => {
@@ -43,8 +50,9 @@ export function NewHabitForm() {
          <input
             type="text"
             id="title"
-            className="p-4 rounded-lg mt-3 bg-zinc-800 text-white placeholder:text-zinc-400"
+            className="p-4 rounded-lg mt-3 bg-zinc-800 text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-violet-600 focus:ring-offset-2 focus:ring-offset-zinc-900"
             placeholder="ex: Exercícios, dormir bem, etc..."
+            value={title}
             autoFocus
             onChange={event => setTitle(event.target.value)}
          />
@@ -58,10 +66,11 @@ export function NewHabitForm() {
                return (
                   <Checkbox.Root
                      key={weekDay}
-                     className="flex items-center gap-3 group"
+                     className="flex items-center gap-3 group outline-none"
+                     checked={weekDays.includes(index)}
                      onCheckedChange={() => handleToogleWeekDay(index)}
                   >
-                     <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border-2 border-zinc-800 group-data-[state=checked]:bg-green-500 group-data-[state=checked]:border-green-500">
+                     <div className="h-8 w-8 rounded-lg flex items-center justify-center bg-zinc-900 border-2 border-zinc-800 group-data-[state=checked]:bg-green-500 group-data-[state=checked]:border-green-500 transition-colors duration-75 focus:outline-none group-focus:ring-2 group-focus:ring-violet-600 group-focus:ring-offset-2 group-focus:ring-offset-zinc-900">
                         <Checkbox.Indicator>
                            <Check size={20} className="text-white" />
                         </Checkbox.Indicator>
@@ -76,7 +85,7 @@ export function NewHabitForm() {
          </div>
 
 
-         <button type="submit" className="mt-6 rounded-lg p-4 flex items-center justify-center gap-3 font-semibold bg-green-600 transition-all hover:bg-green-500">
+         <button type="submit" className="mt-6 rounded-lg p-4 flex items-center justify-center gap-3 font-semibold bg-green-600 transition-all duration-300 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-zinc-900">
             <Check size={20} weight="bold" />
             Confirmar
          </button>
